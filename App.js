@@ -29,9 +29,9 @@ class ReactCalculator extends Component {
         this.state = {
             previousInputValue: 0,
             inputValue: 0,
-            currentValue: "",
             selectedSymbol: null,
             isDecimal : null,
+            connectValue: null,
         };
 
         this.initialState = this.state;
@@ -42,7 +42,11 @@ class ReactCalculator extends Component {
         return (
           <View style={Style.rootContainer}>
           <View style={Style.displayContainer}>
-              <Text style={Style.displayText}>{this.state.inputValue}</Text>
+              <Text style={Style.displayText}>
+                  {/* {this.state.inputValue} */}
+                  {this.state.connectValue ? this.state.connectValue : (this.state.displayedValue ? this.state.displayedValue : this.state.inputValue)}
+
+                  </Text>
           </View>
           <View style={Style.inputContainer}>
               {this._renderInputButtons()}
@@ -96,6 +100,9 @@ class ReactCalculator extends Component {
         this.setState({
             inputValue: inputValue,
             isDecimal: isDecimal,
+            connectValue: null,
+            displayedValue: null,
+
         })
     }
 
@@ -108,14 +115,6 @@ class ReactCalculator extends Component {
       }
     }
 
-
-
-    // backspace = () => {
-    //     this.setState({
-    //         result: this.state.inputValue.slice(0, -1)
-    //     })
-    // }
-
     _handleStringInput(str) {
         switch (str) {
             case '/':
@@ -124,13 +123,9 @@ class ReactCalculator extends Component {
                     previousInputValue: this.state.inputValue,
                     inputValue: 0,
                     isDecimal : null,
+                    connectValue: str,
+
                 });
-                 
-                if (inputValue === 0) {
-                    alert("Please don't divide by zero.");
-                    return;
-                } 
-                
                 break;
 
             case '*':
@@ -141,6 +136,7 @@ class ReactCalculator extends Component {
                     previousInputValue: this.state.inputValue,
                     inputValue: 0,
                     isDecimal : null,
+                    connectValue: str
                 });
                 break;
 
@@ -154,25 +150,60 @@ class ReactCalculator extends Component {
                     return;
                 }
 
+                if (symbol == '/') {
+                    if (inputValue == 0) {
+                        alert("Please don't divide by zero.");
+                        return;
+                    }
+                }
+
+
                 this.setState({
                     previousInputValue: 0,
-                    inputValue: eval(previousInputValue + symbol + inputValue),
+                    displayedValue: eval(previousInputValue + symbol + inputValue),
+                    inputValue: 0,
                     selectedSymbol: null,
                     isDecimal : null,
+                    connectValue: null,
+
                 });
                 break;
 
             case 'CE':
                 this.setState({
-                    inputValue: 0,
+                    inputValue : this.state.inputValue.toString().slice(0, -1),
                     isDecimal : null,
+                    
+
                 })
+
+                if (this.state.inputValue.length < 2) {
+
+                    this.setState({
+                        inputValue : 0,
+                        isDecimal : null,
+                    })
+                    return;
+                }
+
+                if (this.state.inputValue == 0) {
+
+                    this.setState({
+                        inputValue : 0,
+                        isDecimal : null,
+                    })
+                    return;
+                }
+
+
                 break;
     
             case 'C':
                 this.setState({
-                    inputValue : this.state.inputValue.toString().slice(0, -1),
+                    inputValue: 0,
                     isDecimal : null,
+                    displayedValue: null,
+                    connectValue: null,
                 })
                 break;
 
@@ -205,29 +236,6 @@ class ReactCalculator extends Component {
                 //             };
     // document.Calculator.Display.value = Current;
    
-
-
-
-                // if (!symbol) {
-                //     return;
-                // }
-
-                // this.setState({
-                //     inputValue: eval(previousInputValue + symbol + inputValue),
-                // });
-                // break;
-
-
-
-
-                // this.setState({
-                //     selectedSymbol: str,
-                //     // previousInputValue: this.state.inputValue,
-                //     yas: previousInputValue + '.' 
-                // })
-
-
-
                 break;
         }
     }
