@@ -6,22 +6,17 @@ var Style = StyleSheet.create({
         flex: 1
     },
 
-    displayContainer: {
-        flex: 2,
-        backgroundColor: '#193441'
-    },
-
     inputContainer: {
         flex: 8,
-        backgroundColor: '#3E606F'
+        backgroundColor: '#4ac6a5'
     },
 
     inputButton: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 0.5,
-        borderColor: '#91AA9D'
+        borderWidth: 5,
+        borderColor: '#4ac6a5',
     },
 
     inputButtonText: {
@@ -37,7 +32,7 @@ var Style = StyleSheet.create({
 
     displayContainer: {
         flex: 2,
-        backgroundColor: '#193441',
+        backgroundColor: '#1e9475',
         justifyContent: 'center'
     },
 
