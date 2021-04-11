@@ -1,14 +1,14 @@
 import React, {
-  Component
- } from 'react';
+    Component
+} from 'react';
 
- import Style from './src/Style';
- import InputButton from './src/InputButton';
- import {
- View,
- Text,
- AppRegistry
- } from 'react-native';
+import Style from './src/Style';
+import InputButton from './src/InputButton';
+import {
+    View,
+    Text,
+    AppRegistry
+} from 'react-native';
 
 // Define the input buttons that will be displayed in the calculator.
 const inputButtons = [
@@ -17,7 +17,7 @@ const inputButtons = [
     [4, 5, 6, '*'],
     [7, 8, 9, '-'],
     [0, '.', '=', '+']
-    
+
 ];
 
 class ReactCalculator extends Component {
@@ -25,52 +25,51 @@ class ReactCalculator extends Component {
 
     constructor(props) {
         super(props);
-  
+
         this.state = {
             previousInputValue: 0,
+            currentInputValue: 0,
             inputValue: 0,
             selectedSymbol: null,
-            isDecimal : null,
+            isDecimal: null,
             connectValue: null,
         };
 
         this.initialState = this.state;
     }
 
-    
+
     render() {
         return (
-          <View style={Style.rootContainer}>
-          <View style={Style.displayContainer}>
-              <Text style={Style.displayText}>
-                  {/* {this.state.inputValue} */}
-                  {this.state.connectValue ? this.state.connectValue : (this.state.displayedValue ? this.state.displayedValue : this.state.inputValue)}
-
-                  </Text>
-          </View>
-          <View style={Style.inputContainer}>
-              {this._renderInputButtons()}
-          </View>
-          </View>
+            <View style={Style.rootContainer}>
+                <View style={Style.displayContainer}>
+                    <Text style={Style.displayText}>
+                        {this.state.connectValue ? this.state.connectValue : (this.state.displayedValue ? this.state.displayedValue : this.state.inputValue)}
+                    </Text>
+                </View>
+                <View style={Style.inputContainer}>
+                    {this._renderInputButtons()}
+                </View>
+            </View>
         )
     }
 
     _renderInputButtons() {
         let views = [];
 
-        for (var r = 0; r < inputButtons.length; r ++) {
+        for (var r = 0; r < inputButtons.length; r++) {
             let row = inputButtons[r];
 
             let inputRow = [];
-            for (var i = 0; i < row.length; i ++) {
+            for (var i = 0; i < row.length; i++) {
                 let input = row[i];
 
                 inputRow.push(
-                  <InputButton
-                      value={input}
-                      onPress={this._onInputButtonPressed.bind(this, input)}
-                      key={r + "-" + i}/>
-              );
+                    <InputButton
+                        value={input}
+                        onPress={this._onInputButtonPressed.bind(this, input)}
+                        key={r + "-" + i} />
+                );
             }
 
             views.push(<View style={Style.inputRow} key={"row-" + r}>{inputRow}</View>)
@@ -84,22 +83,21 @@ class ReactCalculator extends Component {
     _handleNumberInput(num) {
         let inputValue = (this.state.inputValue * 10) + num;
         let isDecimal = this.state.isDecimal;
-        
-        // if(isDecimal) {
-        // if(num > 0) {
-        //     inputValue = eval(inputValue + num).toString();
-        // } else {
-        //     // inputValue = inputValue + num;
-        //     inputValue = inputValue;
-        // }
-        // } 
-        // else {
-        // inputValue = inputValue;
-        // }
+
+        if(isDecimal) {
+        if(num > 0) {
+            inputValue = eval(inputValue + num).toString();
+        } else {
+            inputValue = inputValue + num;
+        }
+        } else {
+        inputValue = inputValue;
+        }
 
         this.setState({
-            inputValue: inputValue,
-            isDecimal: isDecimal,
+            inputValue: this.state.isDecimal ? eval(this.state.currentInputValue + this.state.selectedSymbol + num) : this.state.inputValue * 10 + num,
+            currentInputValue: this.state.isDecimal ? 0 : this.state.inputValue * 10 + num,
+            isDecimal: null,
             connectValue: null,
             displayedValue: null,
 
@@ -107,12 +105,12 @@ class ReactCalculator extends Component {
     }
 
     _onInputButtonPressed(input) {
-      switch (typeof input) {
-          case 'number':
-              return this._handleNumberInput(input)
-          case 'string':
-              return this._handleStringInput(input)
-      }
+        switch (typeof input) {
+            case 'number':
+                return this._handleNumberInput(input)
+            case 'string':
+                return this._handleStringInput(input)
+        }
     }
 
     _handleStringInput(str) {
@@ -122,7 +120,7 @@ class ReactCalculator extends Component {
                     selectedSymbol: str,
                     previousInputValue: this.state.inputValue,
                     inputValue: 0,
-                    isDecimal : null,
+                    isDecimal: null,
                     connectValue: str,
 
                 });
@@ -135,7 +133,7 @@ class ReactCalculator extends Component {
                     selectedSymbol: str,
                     previousInputValue: this.state.inputValue,
                     inputValue: 0,
-                    isDecimal : null,
+                    isDecimal: null,
                     connectValue: str
                 });
                 break;
@@ -163,7 +161,7 @@ class ReactCalculator extends Component {
                     displayedValue: eval(previousInputValue + symbol + inputValue),
                     inputValue: 0,
                     selectedSymbol: null,
-                    isDecimal : null,
+                    isDecimal: null,
                     connectValue: null,
 
                 });
@@ -171,17 +169,15 @@ class ReactCalculator extends Component {
 
             case 'CE':
                 this.setState({
-                    inputValue : this.state.inputValue.toString().slice(0, -1),
-                    isDecimal : null,
-                    
-
+                    inputValue: this.state.inputValue.toString().slice(0, -1),
+                    isDecimal: this.initialState.isDecimal,
                 })
 
                 if (this.state.inputValue.length < 2) {
 
                     this.setState({
-                        inputValue : 0,
-                        isDecimal : null,
+                        inputValue: 0,
+                        isDecimal: null,
                     })
                     return;
                 }
@@ -189,58 +185,37 @@ class ReactCalculator extends Component {
                 if (this.state.inputValue == 0) {
 
                     this.setState({
-                        inputValue : 0,
-                        isDecimal : null,
+                        inputValue: 0,
+                        isDecimal: null,
                     })
                     return;
                 }
 
 
                 break;
-    
+
             case 'C':
                 this.setState({
                     inputValue: 0,
-                    isDecimal : null,
+                    isDecimal: null,
                     displayedValue: null,
                     connectValue: null,
                 })
                 break;
 
             case '.':
-                // let isDecimal = this.state.isDecimal;
-                // if(isDecimal);
-                // this.setState({
-                //     isDecimal: true,
-                //     selectedSymbol: str,
-                //     previousInputvalue: this.state.inputValue
-                //   });
-                //   break;
-                // let previousDecimal = previousInputValue.length;
-
-                let isDecimal = this.state.isDecimal;
-                if(isDecimal) break;
-    
                 this.setState({
-                    // consolelog:(this.state.updated),
-                    previousInputValue: 0,
+                    // previousInputValue: 0,
+                    previousInputvalue: this.state.inputValue,
                     isDecimal: true,
+                    selectedSymbol: str,
                     inputValue: this.state.inputValue + str,
                 });
-
-                // if ( previousDecimal == 0)     //no leading ".", use "0."
-                //     { previousInputValue = "0.";
-                //     } else {  
-                //         if ( previousInputValue.indexOf(".") == -1)
-                //                 { previousInputValue = previousInputValue + ".";};   
-                //             };
-    // document.Calculator.Display.value = Current;
-   
                 break;
         }
     }
 
 }
 
- 
- export default ReactCalculator
+
+export default ReactCalculator
